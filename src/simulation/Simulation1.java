@@ -88,7 +88,7 @@ public class Simulation1 {
 		try {
 			
 			try {
-				OutputStream os = new FileOutputStream(".//result//resulttest.txt");
+				OutputStream os = new FileOutputStream(".//result//result.txt");
 				Log.setOutput(os);
 				
 			} catch (FileNotFoundException e) {
@@ -316,7 +316,7 @@ public class Simulation1 {
 		/** The cloudlet list. */
 		List<Cloudlet> cloudletList;
 		//Read Cloudlets from workload file in the swf format
-		WorkloadFileReader workloadFileReader = new WorkloadFileReader(".//workload//NASA-iPSC-1993-3-teste.swf", 1);
+		WorkloadFileReader workloadFileReader = new WorkloadFileReader(".//workload//NASA-iPSC-1993-3.swf", 1);
 		//generate cloudlets from workload file
 		cloudletList = workloadFileReader.generateWorkload();
 		
