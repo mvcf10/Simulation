@@ -88,90 +88,60 @@ public class Simulation2 {
 				Log.setOutput(os);
 				
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        	
         	
             /**
              * number of cloud Users
              */
             int num_user = 1;
             /**
-             *  The fields of calender have been initialized with the current date and time.
+             *  The fields of calendar have been initialized with the current date and time.
              */
             Calendar calendar = Calendar.getInstance();
             /**
              * Deactivating the event tracing
              */
             boolean trace_flag = false;
-            /**
-             * 1- Like CloudSim the first step is initializing the CloudSim Package before creating any entities.
-             *
-             */
 
+            /*Inicializa o cloudsim*/
+            CloudSim.init(num_user, calendar, trace_flag); 
+            
+            /*Define politica de alocação de containers*/
+            ContainerAllocationPolicy containerAllocationPolicy = new PowerContainerAllocationPolicySimple(); 
 
-            CloudSim.init(num_user, calendar, trace_flag);
-            /**
-             * 2-  Defining the container allocation Policy. This policy determines how Containers are
-             * allocated to VMs in the data center.
-             *
-             */
-
-
-            ContainerAllocationPolicy containerAllocationPolicy = new PowerContainerAllocationPolicySimple();
-
-            /**
-             * 3-  Defining the VM selection Policy. This policy determines which VMs should be selected for migration
-             * when a host is identified as over-loaded.
-             *
-             */
-
+            /*Define politica de seleção de VM*/
             PowerContainerVmSelectionPolicy vmSelectionPolicy = new PowerContainerVmSelectionPolicyMaximumUsage();
 
-
-            /**
-             * 4-  Defining the host selection Policy. This policy determines which hosts should be selected as
-             * migration destination.
-             *
-             */
+            /*Define politica de selecao de host*/
             HostSelectionPolicy hostSelectionPolicy = new HostSelectionPolicyFirstFit();
-            /**
-             * 5- Defining the thresholds for selecting the under-utilized and over-utilized hosts.
-             */
 
+            /*Define os limites para selecao de sub-utilizado e sobre-utilizado*/
             double overUtilizationThreshold = 0.80;
             double underUtilizationThreshold = 0.70;
-            /**
-             * 6- The host list is created considering the number of hosts, and host types which are specified
-             * in the {@link ConstantsExamples}.
-             */
+
+            /*Criacao da lista de hosts, considerando seu numero e os tipos*/
             hostList = new ArrayList<ContainerHost>();
             hostList = createHostList(ConstantsExamples.NUMBER_HOSTS);
             cloudletList = new ArrayList<ContainerCloudlet>();
             vmList = new ArrayList<ContainerVm>();
-            /**
-             * 7- The container allocation policy  which defines the allocation of VMs to containers.
-             */
+
+            /*Define politica de alocacao de containers*/
             ContainerVmAllocationPolicy vmAllocationPolicy = new
                     PowerContainerVmAllocationPolicyMigrationAbstractHostSelection(hostList, vmSelectionPolicy,
                     hostSelectionPolicy, overUtilizationThreshold, underUtilizationThreshold);
-            /**
-             * 8- The overbooking factor for allocating containers to VMs. This factor is used by the broker for the
-             * allocation process.
-             */
+
+            /*Fator de sobre-reserva para alocacao de containers a VM's*/
             int overBookingFactor = 80;
             ContainerDatacenterBroker broker = createBroker(overBookingFactor);
             int brokerId = broker.getId();
-            /**
-             * 9- Creating the cloudlet, container and VM lists for submitting to the broker.
-             */
+
+            /*Criacao da lista de cloudlet, container e VM's*/
             cloudletList = createContainerCloudletList(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
             containerList = createContainerList(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
             vmList = createVmList(brokerId, ConstantsExamples.NUMBER_VMS);
-            /**
-             * 10- The address for logging the statistics of the VMs, containers in the data center.
-             */
+
+            /*Endereco para logging das estatisticas das VM's, containers e datacenter*/
             String logAddress = "~/Results";
 
             @SuppressWarnings("unused")
@@ -181,33 +151,26 @@ public class Simulation2 {
                     ConstantsExamples.SCHEDULING_INTERVAL, logAddress,
                     ConstantsExamples.VM_STARTTUP_DELAY, ConstantsExamples.CONTAINER_STARTTUP_DELAY);
 
-
-            /**
-             * 11- Submitting the cloudlet's , container's , and VM's lists to the broker.
-             */
+            /*Submeter listas ao broker*/
             broker.submitCloudletList(cloudletList.subList(0, containerList.size()));
             broker.submitContainerList(containerList);
             broker.submitVmList(vmList);
-            /**
-             * 12- Determining the simulation termination time according to the cloudlet's workload.
-             */
+
+            /*Determinar o tempo do fim da simulacao de acordo com o workload*/
             CloudSim.terminateSimulation(86400);
-            /**
-             * 13- Starting the simualtion.
-             */
+
+            /*Inicializando */
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date dateStarted = new Date();
 			Log.printLine("========== OUTPUT ==========");
 			Log.printLine("Started at:" + (dateFormat.format(dateStarted)));
 			
             CloudSim.startSimulation();
-            /**
-             * 14- Stopping the simualtion.
-             */
+            
+            /*Parando a simulacao*/
             CloudSim.stopSimulation();
-            /**
-             * 15- Printing the results when the simulation is finished.
-             */
+
+            /*Printando os resultados quando a simulacao e terminada*/
             List<ContainerCloudlet> newList = broker.getCloudletReceivedList();
             printCloudletList(newList);
             
@@ -224,12 +187,7 @@ public class Simulation2 {
         }
     }
 
-
-
-    /**
-     * It creates a specific name for the experiment which is used for creating the Log address folder.
-     */
-
+    /*Cria nomes especificos para o experimento, usado para nomear os enderecos das pastas de Log*/
     private static String getExperimentName(String... args) {
         StringBuilder experimentName = new StringBuilder();
 
@@ -246,12 +204,7 @@ public class Simulation2 {
         return experimentName.toString();
     }
 
-    /**
-     * Creates the broker.
-     *
-     * @param overBookingFactor
-     * @return the datacenter broker
-     */
+    /*Cria o broker*/
     private static ContainerDatacenterBroker createBroker(int overBookingFactor) {
 
         ContainerDatacenterBroker broker = null;
@@ -266,11 +219,7 @@ public class Simulation2 {
         return broker;
     }
 
-    /**
-     * Prints the Cloudlet objects.
-     *
-     * @param list list of Cloudlets
-     */
+    /*Printa os cloudlets*/
     private static void printCloudletList(List<ContainerCloudlet> list) {
         int size = list.size();
         Cloudlet cloudlet;
@@ -300,13 +249,8 @@ public class Simulation2 {
             }
         }
     }
-
-    /**
-     * Create the Virtual machines and add them to the list
-     *
-     * @param brokerId
-     * @param containerVmsNumber
-     */
+    
+    /*Cria VM e adiciona a lista*/
     private static ArrayList<ContainerVm> createVmList(int brokerId, int containerVmsNumber) {
         ArrayList<ContainerVm> containerVms = new ArrayList<ContainerVm>();
 
@@ -331,14 +275,7 @@ public class Simulation2 {
         return containerVms;
     }
 
-    /**
-     * Create the host list considering the specs listed in the {@link ConstantsExamples}.
-     *
-     * @param hostsNumber
-     * @return
-     */
-
-
+    /*Cria a lista de host considerando as aspectos listado em {@link ConstantsExamples}*/
     public static List<ContainerHost> createHostList(int hostsNumber) {
         ArrayList<ContainerHost> hostList = new ArrayList<ContainerHost>();
         for (int i = 0; i < hostsNumber; ++i) {
@@ -359,21 +296,7 @@ public class Simulation2 {
         return hostList;
     }
 
-
-    /**
-     * Create the data center
-     *
-     * @param name
-     * @param datacenterClass
-     * @param hostList
-     * @param vmAllocationPolicy
-     * @param containerAllocationPolicy
-     * @param experimentName
-     * @param logAddress
-     * @return
-     * @throws Exception
-     */
-
+    /*Cria datacenter*/
     public static ContainerDatacenter createDatacenter(String name, Class<? extends ContainerDatacenter> datacenterClass,
                                                        List<ContainerHost> hostList,
                                                        ContainerVmAllocationPolicy vmAllocationPolicy,
@@ -398,14 +321,7 @@ public class Simulation2 {
         return datacenter;
     }
 
-    /**
-     * create the containers for hosting the cloudlets and binding them together.
-     *
-     * @param brokerId
-     * @param containersNumber
-     * @return
-     */
-
+    /*Cria o container para hostear os cloudlets e linka-los*/
     public static List<Container> createContainerList(int brokerId, int containersNumber) {
         ArrayList<Container> containers = new ArrayList<Container>();
 
@@ -420,14 +336,7 @@ public class Simulation2 {
         return containers;
     }
 
-    /**
-     * Creating the cloudlet list that are going to run on containers
-     *
-     * @param brokerId
-     * @param numberOfCloudlets
-     * @return
-     * @throws FileNotFoundException
-     */
+    /*Cria a lista de cloudlets que rodara nos containers*/
     public static List<ContainerCloudlet> createContainerCloudletList(int brokerId, int numberOfCloudlets)
             throws FileNotFoundException {
     	String inputFolderName = ".//workload/planetlab";
