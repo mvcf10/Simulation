@@ -319,12 +319,9 @@ public class Simulation1 {
 		WorkloadFileReader workloadFileReader = new WorkloadFileReader(".//workload//NASA-iPSC-1993-3.swf", 1);
 		//generate cloudlets from workload file
 		cloudletList = workloadFileReader.generateWorkload();
-		
 		for (Cloudlet cldt : cloudletList) {
 			cldt.setUserId(userId);
 		}
-		
-		
 		return cloudletList;
-		}
+	}
 }

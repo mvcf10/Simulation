@@ -8,7 +8,7 @@ import examples.*;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
-import org.cloudbus.cloudsim.UtilizationModelNull;
+import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerBwProvisionerSimple;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerRamProvisionerSimple;
@@ -31,6 +31,7 @@ import org.cloudbus.cloudsim.container.utils.IDs;
 import org.cloudbus.cloudsim.container.vmSelectionPolicies.PowerContainerVmSelectionPolicy;
 import org.cloudbus.cloudsim.container.vmSelectionPolicies.PowerContainerVmSelectionPolicyMaximumUsage;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.util.WorkloadFileReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -324,7 +325,6 @@ public class Simulation2 {
     /*Cria o container para hostear os cloudlets e linka-los*/
     public static List<Container> createContainerList(int brokerId, int containersNumber) {
         ArrayList<Container> containers = new ArrayList<Container>();
-
         for (int i = 0; i < containersNumber; ++i) {
             int containerType = i / (int) Math.ceil((double) containersNumber / 3.0D);
 
@@ -339,47 +339,80 @@ public class Simulation2 {
     /*Cria a lista de cloudlets que rodara nos containers*/
     public static List<ContainerCloudlet> createContainerCloudletList(int brokerId, int numberOfCloudlets)
             throws FileNotFoundException {
+    	String inputFolderName = ".//workload";
+        ArrayList<ContainerCloudlet> cloudletList = new ArrayList<ContainerCloudlet>();
+        long fileSize = 300L;
+        long outputSize = 300L;
+        UtilizationModelFull utilizationModelFull = new UtilizationModelFull();
+        java.io.File inputFolder1 = new java.io.File(inputFolderName);
+        java.io.File[] files1 = inputFolder1.listFiles();
+        java.io.File workload_file = files1[0]; //DellWorkload.swf
+        //AGORA PRECISO LER O ARQUIVO E PEGAR O CAMPOS NECESSARIOS PARA MONTAR O WORKLOAD DO CONTAINER
+//        for (java.io.File aFiles1 : files1) {
+//            java.io.File inputFolder = new java.io.File(aFiles1.toString());
+//            java.io.File[] files = inputFolder.listFiles();
+//            for (int i = 0; i < files.length; ++i) {
+//                if (createdCloudlets < numberOfCloudlets) {
+//                    ContainerCloudlet cloudlet = null;
+//                    try {
+//                        cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), ConstantsExamples.CLOUDLET_LENGTH, 1,
+//                                fileSize, outputSize, utilizationModelFull, utilizationModelFull, utilizationModelFull);
+//                    } catch (Exception var13) {
+//                        var13.printStackTrace();
+//                        System.exit(0);
+//                    }
+//                    contador++;
+//                    cloudlet.setUserId(brokerId);
+//                    cloudletList.add(cloudlet);
+//                    createdCloudlets++;
+//                } else {
+//                    return cloudletList;
+//                }
+//            }
+//        }
+//        return cloudletList;
+        return null;
+    }
+    
+    /*public static List<ContainerCloudlet> createContainerCloudletList(int brokerId, int numberOfCloudlets)
+            throws FileNotFoundException {
     	String inputFolderName = ".//workload/planetlab";
     			//ContainerCloudSimExample1.class.getClassLoader().getResource().getPath();
         // = "..//workload//planetlab";
         ArrayList<ContainerCloudlet> cloudletList = new ArrayList<ContainerCloudlet>();
         long fileSize = 300L;
         long outputSize = 300L;
-        UtilizationModelNull utilizationModelNull = new UtilizationModelNull();
-        //"c:/Users/vinicius.figueiredo/Desenvolvimento/cloudsim/module/cloudsim-examples/src/main/resources/"
+        UtilizationModelFull utilizationModelFull = new UtilizationModelFull();
         java.io.File inputFolder1 = new java.io.File(inputFolderName);
-        
         java.io.File[] files1 = inputFolder1.listFiles();
         int createdCloudlets = 0;
+        int contador = 1;
         for (java.io.File aFiles1 : files1) {
+        	System.out.println(contador);
             java.io.File inputFolder = new java.io.File(aFiles1.toString());
             java.io.File[] files = inputFolder.listFiles();
             for (int i = 0; i < files.length; ++i) {
                 if (createdCloudlets < numberOfCloudlets) {
                     ContainerCloudlet cloudlet = null;
-
                     try {
                         cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), ConstantsExamples.CLOUDLET_LENGTH, 1,
-                                fileSize, outputSize,
-                                new UtilizationModelPlanetLabInMemoryExtended(files[i].getAbsolutePath(), 300.0D),
-                                utilizationModelNull, utilizationModelNull);
+                                fileSize, outputSize, utilizationModelFull, utilizationModelFull, utilizationModelFull);
+                        System.out.println(contador);
                     } catch (Exception var13) {
                         var13.printStackTrace();
                         System.exit(0);
                     }
-
+                    contador++;
                     cloudlet.setUserId(brokerId);
                     cloudletList.add(cloudlet);
-                    createdCloudlets += 1;
+                    createdCloudlets++;
                 } else {
-
                     return cloudletList;
                 }
             }
-
         }
         return cloudletList;
-    }
+    }*/
 }
 
 
