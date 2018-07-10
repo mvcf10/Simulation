@@ -1,2 +1,193 @@
 Initialising...
-Unwanted errors happen
+========== OUTPUT ==========
+Started at:2018/07/10 15:07:36
+Starting CloudSim version 3.0
+Broker is starting...
+datacenter is starting...
+Entities started.
+0.0: Broker: Trying to Create VM #1 in datacenter
+0.0: Broker: Trying to Create VM #2 in datacenter
+0.0: Broker: Trying to Create VM #3 in datacenter
+0.0: Broker: Trying to Create VM #4 in datacenter
+0.0: Broker: Trying to Create VM #5 in datacenter
+0.0: Broker: Trying to Create VM #6 in datacenter
+0.0: Broker: Trying to Create VM #7 in datacenter
+0.0: Broker: Trying to Create VM #8 in datacenter
+0.0: Broker: Trying to Create VM #9 in datacenter
+0.0: Broker: Trying to Create VM #10 in datacenter
+0.0: Broker: Trying to Create VM #11 in datacenter
+0.0: Broker: Trying to Create VM #12 in datacenter
+0.0: Broker: Trying to Create VM #13 in datacenter
+0.0: Broker: Trying to Create VM #14 in datacenter
+0.0: Broker: Trying to Create VM #15 in datacenter
+0.0: Broker: Trying to Create VM #16 in datacenter
+0.0: Broker: Trying to Create VM #17 in datacenter
+0.0: Broker: Trying to Create VM #18 in datacenter
+0.0: Broker: Trying to Create VM #19 in datacenter
+0.0: Broker: Trying to Create VM #20 in datacenter
+0.0: Broker: Trying to Create VM #21 in datacenter
+0.0: Broker: Trying to Create VM #22 in datacenter
+0.0: Broker: Trying to Create VM #23 in datacenter
+0.0: Broker: Trying to Create VM #24 in datacenter
+0.0: Broker: Trying to Create VM #25 in datacenter
+0,00: VM #1 has been allocated to the host #1
+0,00: VM #2 has been allocated to the host #1
+0,00: VM #3 has been allocated to the host #1
+0,00: VM #4 has been allocated to the host #1
+0,00: VM #5 has been allocated to the host #2
+0,00: VM #6 has been allocated to the host #2
+0,00: VM #7 has been allocated to the host #2
+0,00: VM #8 has been allocated to the host #3
+0,00: VM #9 has been allocated to the host #3
+0,00: VM #10 has been allocated to the host #4
+0,00: VM #11 has been allocated to the host #4
+0,00: VM #12 has been allocated to the host #5
+0,00: VM #13 has been allocated to the host #5
+0,00: VM #14 has been allocated to the host #6
+0,00: VM #15 has been allocated to the host #2
+0,00: VM #16 has been allocated to the host #2
+0,00: VM #17 has been allocated to the host #6
+0,00: VM #18 has been allocated to the host #6
+0,00: VM #19 has been allocated to the host #6
+0,00: VM #20 has been allocated to the host #6
+0,00: VM #21 has been allocated to the host #7
+0,00: VM #22 has been allocated to the host #8
+0,00: VM #23 has been allocated to the host #8
+0,00: VM #24 has been allocated to the host #9
+0,00: VM #25 has been allocated to the host #9
+0.1: Broker: VM #1 has been created in Datacenter #3, Host #1
+0.1: Broker: VM #2 has been created in Datacenter #3, Host #1
+0.1: Broker: VM #3 has been created in Datacenter #3, Host #1
+0.1: Broker: VM #4 has been created in Datacenter #3, Host #1
+0.1: Broker: VM #5 has been created in Datacenter #3, Host #2
+0.1: Broker: VM #6 has been created in Datacenter #3, Host #2
+0.1: Broker: VM #7 has been created in Datacenter #3, Host #2
+0.1: Broker: VM #8 has been created in Datacenter #3, Host #3
+0.1: Broker: VM #9 has been created in Datacenter #3, Host #3
+0.1: Broker: VM #10 has been created in Datacenter #3, Host #4
+0.1: Broker: VM #11 has been created in Datacenter #3, Host #4
+0.1: Broker: VM #12 has been created in Datacenter #3, Host #5
+0.1: Broker: VM #13 has been created in Datacenter #3, Host #5
+0.1: Broker: VM #14 has been created in Datacenter #3, Host #6
+0.1: Broker: VM #15 has been created in Datacenter #3, Host #2
+0.1: Broker: VM #16 has been created in Datacenter #3, Host #2
+0.1: Broker: VM #17 has been created in Datacenter #3, Host #6
+0.1: Broker: VM #18 has been created in Datacenter #3, Host #6
+0.1: Broker: VM #19 has been created in Datacenter #3, Host #6
+0.1: Broker: VM #20 has been created in Datacenter #3, Host #6
+0.1: Broker: VM #21 has been created in Datacenter #3, Host #7
+0.1: Broker: VM #22 has been created in Datacenter #3, Host #8
+0.1: Broker: VM #23 has been created in Datacenter #3, Host #8
+0.1: Broker: VM #24 has been created in Datacenter #3, Host #9
+0.1: Broker: VM #25 has been created in Datacenter #3, Host #9
+0,10: Container #1 has been allocated to the VM #1
+0,10: Container #2 has been allocated to the VM #1
+0,10: Container #3 has been allocated to the VM #1
+0,10: Container #4 has been allocated to the VM #1
+0,10: Container #5 has been allocated to the VM #1
+0,10: Container #6 has been allocated to the VM #1
+0,10: Container #7 has been allocated to the VM #1
+0,10: Container #8 has been allocated to the VM #1
+0,10: Container #9 has been allocated to the VM #2
+0,10: Container #10 has been allocated to the VM #2
+0,10: Container #11 has been allocated to the VM #2
+0,10: Container #12 has been allocated to the VM #2
+0,10: Container #13 has been allocated to the VM #2
+0,10: Container #14 has been allocated to the VM #2
+0,10: Container #15 has been allocated to the VM #2
+0,10: Container #16 has been allocated to the VM #2
+0,10: Container #17 has been allocated to the VM #3
+0,10: Container #18 has been allocated to the VM #3
+0,10: Container #19 has been allocated to the VM #3
+0,10: Container #20 has been allocated to the VM #3
+0,10: Container #21 has been allocated to the VM #4
+0,10: Container #22 has been allocated to the VM #4
+0,10: Container #23 has been allocated to the VM #4
+0,10: Container #24 has been allocated to the VM #5
+0,10: Container #25 has been allocated to the VM #5
+0,10: Container #26 has been allocated to the VM #5
+0,10: Container #27 has been allocated to the VM #6
+0,10: Container #28 has been allocated to the VM #6
+0,10: Container #29 has been allocated to the VM #6
+0,10: Container #30 has been allocated to the VM #7
+0,10: Container #31 has been allocated to the VM #7
+0,10: Container #32 has been allocated to the VM #7
+0,10: Container #33 has been allocated to the VM #8
+0,10: Container #34 has been allocated to the VM #8
+0,10: Container #35 has been allocated to the VM #8
+0,10: Container #36 has been allocated to the VM #8
+0,10: Container #37 has been allocated to the VM #8
+0,10: Container #38 has been allocated to the VM #9
+0,10: Container #39 has been allocated to the VM #9
+0,10: Container #40 has been allocated to the VM #9
+0,10: Container #41 has been allocated to the VM #9
+0,10: Container #42 has been allocated to the VM #10
+0,10: Container #43 has been allocated to the VM #10
+0,10: Container #44 has been allocated to the VM #10
+0,10: Container #45 has been allocated to the VM #10
+0,10: Container #46 has been allocated to the VM #11
+0,10: Container #47 has been allocated to the VM #11
+0,10: Container #48 has been allocated to the VM #11
+0,10: Container #49 has been allocated to the VM #11
+0,10: Container #50 has been allocated to the VM #12
+0.2: Broker: The Container #1, is created on Vm #1, On Host#1
+0.2: Broker: The Container #2, is created on Vm #1, On Host#1
+0.2: Broker: The Container #3, is created on Vm #1, On Host#1
+0.2: Broker: The Container #4, is created on Vm #1, On Host#1
+0.2: Broker: The Container #5, is created on Vm #1, On Host#1
+0.2: Broker: The Container #6, is created on Vm #1, On Host#1
+0.2: Broker: The Container #7, is created on Vm #1, On Host#1
+0.2: Broker: The Container #8, is created on Vm #1, On Host#1
+0.2: Broker: The Container #9, is created on Vm #2, On Host#1
+0.2: Broker: The Container #10, is created on Vm #2, On Host#1
+0.2: Broker: The Container #11, is created on Vm #2, On Host#1
+0.2: Broker: The Container #12, is created on Vm #2, On Host#1
+0.2: Broker: The Container #13, is created on Vm #2, On Host#1
+0.2: Broker: The Container #14, is created on Vm #2, On Host#1
+0.2: Broker: The Container #15, is created on Vm #2, On Host#1
+0.2: Broker: The Container #16, is created on Vm #2, On Host#1
+0.2: Broker: The Container #17, is created on Vm #3, On Host#1
+0.2: Broker: The Container #18, is created on Vm #3, On Host#1
+0.2: Broker: The Container #19, is created on Vm #3, On Host#1
+0.2: Broker: The Container #20, is created on Vm #3, On Host#1
+0.2: Broker: The Container #21, is created on Vm #4, On Host#1
+0.2: Broker: The Container #22, is created on Vm #4, On Host#1
+0.2: Broker: The Container #23, is created on Vm #4, On Host#1
+0.2: Broker: The Container #24, is created on Vm #5, On Host#2
+0.2: Broker: The Container #25, is created on Vm #5, On Host#2
+0.2: Broker: The Container #26, is created on Vm #5, On Host#2
+0.2: Broker: The Container #27, is created on Vm #6, On Host#2
+0.2: Broker: The Container #28, is created on Vm #6, On Host#2
+0.2: Broker: The Container #29, is created on Vm #6, On Host#2
+0.2: Broker: The Container #30, is created on Vm #7, On Host#2
+0.2: Broker: The Container #31, is created on Vm #7, On Host#2
+0.2: Broker: The Container #32, is created on Vm #7, On Host#2
+0.2: Broker: The Container #33, is created on Vm #8, On Host#3
+0.2: Broker: The Container #34, is created on Vm #8, On Host#3
+0.2: Broker: The Container #35, is created on Vm #8, On Host#3
+0.2: Broker: The Container #36, is created on Vm #8, On Host#3
+0.2: Broker: The Container #37, is created on Vm #8, On Host#3
+0.2: Broker: The Container #38, is created on Vm #9, On Host#3
+0.2: Broker: The Container #39, is created on Vm #9, On Host#3
+0.2: Broker: The Container #40, is created on Vm #9, On Host#3
+0.2: Broker: The Container #41, is created on Vm #9, On Host#3
+0.2: Broker: The Container #42, is created on Vm #10, On Host#4
+0.2: Broker: The Container #43, is created on Vm #10, On Host#4
+0.2: Broker: The Container #44, is created on Vm #10, On Host#4
+0.2: Broker: The Container #45, is created on Vm #10, On Host#4
+0.2: Broker: The Container #46, is created on Vm #11, On Host#4
+0.2: Broker: The Container #47, is created on Vm #11, On Host#4
+0.2: Broker: The Container #48, is created on Vm #11, On Host#4
+0.2: Broker: The Container #49, is created on Vm #11, On Host#4
+0.2: Broker: The Container #50, is created on Vm #12, On Host#5
+Simulation: No more future events
+CloudInformationService: Notify all CloudSim entities for shutting down.
+Broker is shutting down...
+datacenter is shutting down...
+Simulation completed.
+Simulation completed.
+
+========== OUTPUT ==========
+Cloudlet ID    STATUS    Data center ID    VM ID    Time    Start Time    Finish Time
+Finished at:2018/07/10 15:07:36
+============================

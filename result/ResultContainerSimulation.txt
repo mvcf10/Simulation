@@ -1,0 +1,43 @@
+Initialising...
+========== OUTPUT ==========
+Started at:2018/07/10 16:49:11
+Starting CloudSim version 3.0
+Broker is starting...
+datacenter is starting...
+Entities started.
+0.0: Broker: Trying to Create VM #1 in datacenter
+0,00: VM #1 has been allocated to the host #1
+0.1: Broker: VM #1 has been created in Datacenter #3, Host #1
+0,10: Container #1 has been allocated to the VM #1
+0,10: No suitable VM found for Container#2
+
+Couldn't find a vm to host the container #2-2
+0,10: No suitable VM found for Container#3
+
+Couldn't find a vm to host the container #2-3
+0,10: No suitable VM found for Container#4
+
+Couldn't find a vm to host the container #2-4
+0,10: No suitable VM found for Container#5
+
+Couldn't find a vm to host the container #2-5
+0,10: No suitable VM found for Container#6
+
+Couldn't find a vm to host the container #2-6
+0.2: Broker: The Container #1, is created on Vm #1, On Host#1
+0.2: Broker: Failed Creation of Container #2
+0.2: Broker: Failed Creation of Container #3
+0.2: Broker: Failed Creation of Container #4
+0.2: Broker: Failed Creation of Container #5
+0.2: Broker: Failed Creation of Container #6
+Simulation: No more future events
+CloudInformationService: Notify all CloudSim entities for shutting down.
+Broker is shutting down...
+datacenter is shutting down...
+Simulation completed.
+Simulation completed.
+
+========== OUTPUT ==========
+Cloudlet ID    STATUS    Data center ID    VM ID    Time    Start Time    Finish Time
+Finished at:2018/07/10 16:49:11
+============================

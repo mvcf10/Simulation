@@ -9,6 +9,7 @@ import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.UtilizationModelNull;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerBwProvisionerSimple;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerRamProvisionerSimple;
@@ -83,9 +84,8 @@ public class Simulation2 {
         //Log.printLine("Starting ContainerCloudSimExample1...");
         System.out.println("Starting Simulation...");
         try {
-        	
         	try {
-				OutputStream os = new FileOutputStream(".//result//result_simulation2.txt");
+				OutputStream os = new FileOutputStream(".//result//ResultContainerSimulationTest.txt");
 				Log.setOutput(os);
 				
 			} catch (FileNotFoundException e) {
@@ -138,12 +138,13 @@ public class Simulation2 {
             int brokerId = broker.getId();
 
             /*Criacao da lista de cloudlet, container e VM's*/
-            cloudletList = createContainerCloudletList(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
+//            cloudletList = createContainerCloudletList(brokerId);
+            cloudletList = createContainerCloudletList2(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
             containerList = createContainerList(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
             vmList = createVmList(brokerId, ConstantsExamples.NUMBER_VMS);
 
             /*Endereco para logging das estatisticas das VM's, containers e datacenter*/
-            String logAddress = "~/Results";
+            String logAddress = ".//result//LogContainerSimulation.txt";
 
             @SuppressWarnings("unused")
 			PowerContainerDatacenter e = (PowerContainerDatacenter) createDatacenter("datacenter",
@@ -165,12 +166,11 @@ public class Simulation2 {
 			Date dateStarted = new Date();
 			Log.printLine("========== OUTPUT ==========");
 			Log.printLine("Started at:" + (dateFormat.format(dateStarted)));
-			
             CloudSim.startSimulation();
             
             /*Parando a simulacao*/
             CloudSim.stopSimulation();
-
+            
             /*Printando os resultados quando a simulacao e terminada*/
             List<ContainerCloudlet> newList = broker.getCloudletReceivedList();
             printCloudletList(newList);
@@ -257,22 +257,19 @@ public class Simulation2 {
 
         for (int i = 0; i < containerVmsNumber; ++i) {
             ArrayList<ContainerPe> peList = new ArrayList<ContainerPe>();
-            int vmType = i / (int) Math.ceil((double) containerVmsNumber / 4.0D);
-            for (int j = 0; j < ConstantsExamples.VM_PES[vmType]; ++j) {
+            for (int j = 0; j < ConstantsExamples.VM_PES; ++j) {
                 peList.add(new ContainerPe(j,
-                        new CotainerPeProvisionerSimple((double) ConstantsExamples.VM_MIPS[vmType])));
+                        new CotainerPeProvisionerSimple((double) ConstantsExamples.VM_MIPS)));
             }
             containerVms.add(new PowerContainerVm(IDs.pollId(ContainerVm.class), brokerId,
-                    (double) ConstantsExamples.VM_MIPS[vmType], (float) ConstantsExamples.VM_RAM[vmType],
+                    (double) ConstantsExamples.VM_MIPS, (float) ConstantsExamples.VM_RAM,
                     ConstantsExamples.VM_BW, ConstantsExamples.VM_SIZE, "Xen",
                     new ContainerSchedulerTimeSharedOverSubscription(peList),
-                    new ContainerRamProvisionerSimple(ConstantsExamples.VM_RAM[vmType]),
+                    new ContainerRamProvisionerSimple(ConstantsExamples.VM_RAM),
                     new ContainerBwProvisionerSimple(ConstantsExamples.VM_BW),
                     peList, ConstantsExamples.SCHEDULING_INTERVAL));
-
-
         }
-
+        System.out.println("Container VMS: "+containerVms.size());
         return containerVms;
     }
 
@@ -282,18 +279,18 @@ public class Simulation2 {
         for (int i = 0; i < hostsNumber; ++i) {
             int hostType = i / (int) Math.ceil((double) hostsNumber / 3.0D);
             ArrayList<ContainerVmPe> peList = new ArrayList<ContainerVmPe>();
-            for (int j = 0; j < ConstantsExamples.HOST_PES[hostType]; ++j) {
+            for (int j = 0; j < ConstantsExamples.HOST_PES; ++j) {
                 peList.add(new ContainerVmPe(j,
-                        new ContainerVmPeProvisionerSimple((double) ConstantsExamples.HOST_MIPS[hostType])));
+                        new ContainerVmPeProvisionerSimple((double) ConstantsExamples.HOST_MIPS)));
             }
 
             hostList.add(new PowerContainerHostUtilizationHistory(IDs.pollId(ContainerHost.class),
-                    new ContainerVmRamProvisionerSimple(ConstantsExamples.HOST_RAM[hostType]),
+                    new ContainerVmRamProvisionerSimple(ConstantsExamples.HOST_RAM),
                     new ContainerVmBwProvisionerSimple(1000000L), 1000000L, peList,
                     new ContainerVmSchedulerTimeSharedOverSubscription(peList),
                     ConstantsExamples.HOST_POWER[hostType]));
         }
-
+        System.out.println("Hosts: "+hostList.size());
         return hostList;
     }
 
@@ -326,55 +323,46 @@ public class Simulation2 {
     public static List<Container> createContainerList(int brokerId, int containersNumber) {
         ArrayList<Container> containers = new ArrayList<Container>();
         for (int i = 0; i < containersNumber; ++i) {
-            int containerType = i / (int) Math.ceil((double) containersNumber / 3.0D);
-
-            containers.add(new PowerContainer(IDs.pollId(Container.class), brokerId, (double) ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.
-                    CONTAINER_PES[containerType], ConstantsExamples.CONTAINER_RAM[containerType], ConstantsExamples.CONTAINER_BW, 0L, "Xen",
-                    new ContainerCloudletSchedulerDynamicWorkload(ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.CONTAINER_PES[containerType]), ConstantsExamples.SCHEDULING_INTERVAL));
+//            int containerType = i / (int) Math.ceil((double) containersNumber / 3.0D);
+//            containers.add(new PowerContainer(IDs.pollId(Container.class), brokerId, (double) ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.
+//                    CONTAINER_PES[containerType], ConstantsExamples.CONTAINER_RAM[containerType], ConstantsExamples.CONTAINER_BW, 0L, "Xen",
+//                    new ContainerCloudletSchedulerDynamicWorkload(ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.CONTAINER_PES[containerType]), ConstantsExamples.SCHEDULING_INTERVAL));
+            containers.add(new PowerContainer(IDs.pollId(Container.class), brokerId, (double) ConstantsExamples.CONTAINER_MIPS, ConstantsExamples.
+                    CONTAINER_PES, ConstantsExamples.CONTAINER_RAM, ConstantsExamples.CONTAINER_BW, 0L, "Xen",
+                    new ContainerCloudletSchedulerDynamicWorkload(ConstantsExamples.CONTAINER_MIPS, ConstantsExamples.CONTAINER_PES), ConstantsExamples.SCHEDULING_INTERVAL));
         }
-
+        System.out.println("Containers: "+containers.size());
         return containers;
     }
 
     /*Cria a lista de cloudlets que rodara nos containers*/
-    public static List<ContainerCloudlet> createContainerCloudletList(int brokerId, int numberOfCloudlets)
+    public static List<ContainerCloudlet> createContainerCloudletList(int brokerId)
             throws FileNotFoundException {
-    	String inputFolderName = ".//workload";
-        ArrayList<ContainerCloudlet> cloudletList = new ArrayList<ContainerCloudlet>();
-        long fileSize = 300L;
-        long outputSize = 300L;
-        UtilizationModelFull utilizationModelFull = new UtilizationModelFull();
-        java.io.File inputFolder1 = new java.io.File(inputFolderName);
-        java.io.File[] files1 = inputFolder1.listFiles();
-        java.io.File workload_file = files1[0]; //DellWorkload.swf
-        //AGORA PRECISO LER O ARQUIVO E PEGAR O CAMPOS NECESSARIOS PARA MONTAR O WORKLOAD DO CONTAINER
-//        for (java.io.File aFiles1 : files1) {
-//            java.io.File inputFolder = new java.io.File(aFiles1.toString());
-//            java.io.File[] files = inputFolder.listFiles();
-//            for (int i = 0; i < files.length; ++i) {
-//                if (createdCloudlets < numberOfCloudlets) {
-//                    ContainerCloudlet cloudlet = null;
-//                    try {
-//                        cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), ConstantsExamples.CLOUDLET_LENGTH, 1,
-//                                fileSize, outputSize, utilizationModelFull, utilizationModelFull, utilizationModelFull);
-//                    } catch (Exception var13) {
-//                        var13.printStackTrace();
-//                        System.exit(0);
-//                    }
-//                    contador++;
-//                    cloudlet.setUserId(brokerId);
-//                    cloudletList.add(cloudlet);
-//                    createdCloudlets++;
-//                } else {
-//                    return cloudletList;
-//                }
-//            }
-//        }
-//        return cloudletList;
-        return null;
+    	ArrayList<ContainerCloudlet> containerCloudletList = new ArrayList<ContainerCloudlet>();
+    	List<Cloudlet> cloudletList;
+		WorkloadFileReader workloadFileReader = new WorkloadFileReader(".//workload//DellWorkload.swf", 1);
+		cloudletList = workloadFileReader.generateWorkload();
+		for (Cloudlet cldt : cloudletList) {
+			cldt.setUserId(brokerId);
+		}
+		for (Cloudlet cldt : cloudletList) {
+			ContainerCloudlet cloudlet = null;
+			try {
+				cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), cldt.getCloudletLength(), /*cldt.getNumberOfPes()*/1,
+						cldt.getCloudletFileSize(), cldt.getCloudletOutputSize(), cldt.getUtilizationModelCpu(), 
+						cldt.getUtilizationModelRam(), cldt.getUtilizationModelBw());
+			} catch (Exception var13) {
+				var13.printStackTrace();
+				System.exit(0);
+			}
+			cloudlet.setUserId(brokerId);
+			containerCloudletList.add(cloudlet);
+		}
+		System.out.println("Cloudlets: "+containerCloudletList.size());
+        return containerCloudletList;
     }
     
-    /*public static List<ContainerCloudlet> createContainerCloudletList(int brokerId, int numberOfCloudlets)
+    public static List<ContainerCloudlet> createContainerCloudletList2(int brokerId, int numberOfCloudlets)
             throws FileNotFoundException {
     	String inputFolderName = ".//workload/planetlab";
     			//ContainerCloudSimExample1.class.getClassLoader().getResource().getPath();
@@ -382,22 +370,26 @@ public class Simulation2 {
         ArrayList<ContainerCloudlet> cloudletList = new ArrayList<ContainerCloudlet>();
         long fileSize = 300L;
         long outputSize = 300L;
-        UtilizationModelFull utilizationModelFull = new UtilizationModelFull();
+        UtilizationModelNull utilizationModelNull = new UtilizationModelNull();
         java.io.File inputFolder1 = new java.io.File(inputFolderName);
         java.io.File[] files1 = inputFolder1.listFiles();
+//        System.out.println(files1[0]);
         int createdCloudlets = 0;
         int contador = 1;
         for (java.io.File aFiles1 : files1) {
-        	System.out.println(contador);
+//        	System.out.println(contador);
             java.io.File inputFolder = new java.io.File(aFiles1.toString());
             java.io.File[] files = inputFolder.listFiles();
+//            System.out.println(files[0]);
             for (int i = 0; i < files.length; ++i) {
                 if (createdCloudlets < numberOfCloudlets) {
+//                	System.out.println(contador);
                     ContainerCloudlet cloudlet = null;
                     try {
                         cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), ConstantsExamples.CLOUDLET_LENGTH, 1,
-                                fileSize, outputSize, utilizationModelFull, utilizationModelFull, utilizationModelFull);
-                        System.out.println(contador);
+                                fileSize, outputSize, new UtilizationModelPlanetLabInMemoryExtended(files[i].getAbsolutePath(), 300.0D),
+                                utilizationModelNull, utilizationModelNull);
+//                        System.out.println(contador);
                     } catch (Exception var13) {
                         var13.printStackTrace();
                         System.exit(0);
@@ -407,12 +399,15 @@ public class Simulation2 {
                     cloudletList.add(cloudlet);
                     createdCloudlets++;
                 } else {
+//                	System.out.println("Sai aqui!");
+                	System.out.println("Cloudlets: "+cloudletList.size());
                     return cloudletList;
                 }
             }
         }
+        System.out.println("Cloudlets: "+cloudletList.size());
         return cloudletList;
-    }*/
+    }
 }
 
 

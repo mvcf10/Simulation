@@ -90,7 +90,6 @@ public class Simulation1 {
 			try {
 				OutputStream os = new FileOutputStream(".//result//result.txt");
 				Log.setOutput(os);
-				
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
