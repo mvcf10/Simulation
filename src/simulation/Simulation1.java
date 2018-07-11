@@ -82,7 +82,6 @@ public class Simulation1 {
 	 * Creates main() to run this example
 	 */
 	public static void main(String[] args) {
-		//Log.printLine("Starting Simulation...");
 		System.out.println("Starting Simulation...");
 
 		try {

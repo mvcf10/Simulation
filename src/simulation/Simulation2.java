@@ -24,6 +24,7 @@ import org.cloudbus.cloudsim.container.hostSelectionPolicies.HostSelectionPolicy
 import org.cloudbus.cloudsim.container.resourceAllocatorMigrationEnabled.PowerContainerVmAllocationPolicyMigrationAbstractHostSelection;
 import org.cloudbus.cloudsim.container.resourceAllocators.ContainerAllocationPolicy;
 import org.cloudbus.cloudsim.container.resourceAllocators.ContainerVmAllocationPolicy;
+import org.cloudbus.cloudsim.container.resourceAllocators.PowerContainerAllocationPolicy;
 import org.cloudbus.cloudsim.container.resourceAllocators.PowerContainerAllocationPolicySimple;
 import org.cloudbus.cloudsim.container.schedulers.ContainerCloudletSchedulerDynamicWorkload;
 import org.cloudbus.cloudsim.container.schedulers.ContainerSchedulerTimeSharedOverSubscription;
@@ -46,42 +47,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-/**
- * A simple example showing how to create a data center with one host, one VM, one container and run one cloudlet on it.
- */
 public class Simulation2 {
 
-    /**
-     * The cloudlet list.
-     */
     private static List<ContainerCloudlet> cloudletList;
-
-    /**
-     * The vmlist.
-     */
     private static List<ContainerVm> vmList;
-
-    /**
-     * The vmlist.
-     */
-
     private static List<Container> containerList;
-
-    /**
-     * The hostList.
-     */
-
     private static List<ContainerHost> hostList;
 
-    /**
-     * Creates main() to run this example.
-     *
-     * @param args the args
-     */
-
     public static void main(String[] args) {
-        //Log.printLine("Starting ContainerCloudSimExample1...");
         System.out.println("Starting Simulation...");
         try {
         	try {
@@ -92,24 +67,20 @@ public class Simulation2 {
 				e.printStackTrace();
 			}
         	
-            /**
-             * number of cloud Users
-             */
-            int num_user = 1;
-            /**
-             *  The fields of calendar have been initialized with the current date and time.
-             */
-            Calendar calendar = Calendar.getInstance();
-            /**
-             * Deactivating the event tracing
-             */
-            boolean trace_flag = false;
+            int num_user = 1; //Numero de usuarios
+            Calendar calendar = Calendar.getInstance(); //Inicializa o calendario
+            boolean trace_flag = false; //Desativa o event tracing
 
             /*Inicializa o cloudsim*/
             CloudSim.init(num_user, calendar, trace_flag); 
             
             /*Define politica de alocação de containers*/
-            ContainerAllocationPolicy containerAllocationPolicy = new PowerContainerAllocationPolicySimple(); 
+            ContainerAllocationPolicy containerAllocationPolicy = new PowerContainerAllocationPolicySimple() {	
+            	@Override
+            	public List<Map<String, Object>> optimizeAllocation(List<? extends Container> arg0) {
+            		return null;
+            	}
+			}; 
 
             /*Define politica de seleção de VM*/
             PowerContainerVmSelectionPolicy vmSelectionPolicy = new PowerContainerVmSelectionPolicyMaximumUsage();
@@ -124,8 +95,6 @@ public class Simulation2 {
             /*Criacao da lista de hosts, considerando seu numero e os tipos*/
             hostList = new ArrayList<ContainerHost>();
             hostList = createHostList(ConstantsExamples.NUMBER_HOSTS);
-            cloudletList = new ArrayList<ContainerCloudlet>();
-            vmList = new ArrayList<ContainerVm>();
 
             /*Define politica de alocacao de containers*/
             ContainerVmAllocationPolicy vmAllocationPolicy = new
@@ -136,32 +105,36 @@ public class Simulation2 {
             int overBookingFactor = 80;
             ContainerDatacenterBroker broker = createBroker(overBookingFactor);
             int brokerId = broker.getId();
-
-            /*Criacao da lista de cloudlet, container e VM's*/
-//            cloudletList = createContainerCloudletList(brokerId);
-            cloudletList = createContainerCloudletList2(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
-            containerList = createContainerList(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
-            vmList = createVmList(brokerId, ConstantsExamples.NUMBER_VMS);
-
+            
             /*Endereco para logging das estatisticas das VM's, containers e datacenter*/
             String logAddress = ".//result//LogContainerSimulation.txt";
-
+            
+            //Cria datacenter
             @SuppressWarnings("unused")
-			PowerContainerDatacenter e = (PowerContainerDatacenter) createDatacenter("datacenter",
+			PowerContainerDatacenter datacenter0 = (PowerContainerDatacenter) createDatacenter("Datacenter",
                     PowerContainerDatacenterCM.class, hostList, vmAllocationPolicy, containerAllocationPolicy,
                     getExperimentName("ContainerCloudSimExample-1", String.valueOf(overBookingFactor)),
                     ConstantsExamples.SCHEDULING_INTERVAL, logAddress,
                     ConstantsExamples.VM_STARTTUP_DELAY, ConstantsExamples.CONTAINER_STARTTUP_DELAY);
 
-            /*Submeter listas ao broker*/
-            broker.submitCloudletList(cloudletList.subList(0, containerList.size()));
-            broker.submitContainerList(containerList);
-            broker.submitVmList(vmList);
+            /*Criacao da lista de cloudlet, container e VM's*/
+            vmList = new ArrayList<ContainerVm>();
+            cloudletList = new ArrayList<ContainerCloudlet>();
+            vmList = createVmList(brokerId, ConstantsExamples.NUMBER_VMS);
+            containerList = createContainerList(brokerId, ConstantsExamples.NUMBER_CONTAINERS);
+            cloudletList = createContainerCloudletList2(brokerId, ConstantsExamples.NUMBER_CLOUDLETS);
+//            cloudletList = createContainerCloudletList(brokerId);
 
+            /*Submeter listas ao broker*/
+            broker.submitVmList(vmList);
+            broker.submitContainerList(containerList);
+//            broker.submitCloudletList(cloudletList.subList(0, containerList.size()));
+            broker.submitCloudletList(cloudletList);
+            
             /*Determinar o tempo do fim da simulacao de acordo com o workload*/
             CloudSim.terminateSimulation(86400);
 
-            /*Inicializando */
+            /*Iniciando a simulacao */
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			Date dateStarted = new Date();
 			Log.printLine("========== OUTPUT ==========");
@@ -172,6 +145,8 @@ public class Simulation2 {
             CloudSim.stopSimulation();
             
             /*Printando os resultados quando a simulacao e terminada*/
+//            List<ContainerCloudlet> subList = broker.getCloudletSubmittedList();
+//            List<ContainerCloudlet> list = broker.getCloudletList();
             List<ContainerCloudlet> newList = broker.getCloudletReceivedList();
             printCloudletList(newList);
             
@@ -269,7 +244,7 @@ public class Simulation2 {
                     new ContainerBwProvisionerSimple(ConstantsExamples.VM_BW),
                     peList, ConstantsExamples.SCHEDULING_INTERVAL));
         }
-        System.out.println("Container VMS: "+containerVms.size());
+        System.out.println("VM's: "+containerVms.size());
         return containerVms;
     }
 
@@ -286,7 +261,7 @@ public class Simulation2 {
 
             hostList.add(new PowerContainerHostUtilizationHistory(IDs.pollId(ContainerHost.class),
                     new ContainerVmRamProvisionerSimple(ConstantsExamples.HOST_RAM),
-                    new ContainerVmBwProvisionerSimple(1000000L), 1000000L, peList,
+                    new ContainerVmBwProvisionerSimple(ConstantsExamples.HOST_BW), ConstantsExamples.HOST_STORAGE, peList,
                     new ContainerVmSchedulerTimeSharedOverSubscription(peList),
                     ConstantsExamples.HOST_POWER[hostType]));
         }
@@ -304,11 +279,11 @@ public class Simulation2 {
         String arch = "x86";
         String os = "Linux";
         String vmm = "Xen";
-        double time_zone = 10.0D;
-        double cost = 3.0D;
-        double costPerMem = 0.05D;
-        double costPerStorage = 0.001D;
-        double costPerBw = 0.0D;
+        double time_zone = 10.0;
+        double cost = 3.0;
+        double costPerMem = 0.05;
+        double costPerStorage = 0.1;
+        double costPerBw = 0.1;
         ContainerDatacenterCharacteristics characteristics = new
                 ContainerDatacenterCharacteristics(arch, os, vmm, hostList, time_zone, cost, costPerMem, costPerStorage,
                 costPerBw);
@@ -323,10 +298,6 @@ public class Simulation2 {
     public static List<Container> createContainerList(int brokerId, int containersNumber) {
         ArrayList<Container> containers = new ArrayList<Container>();
         for (int i = 0; i < containersNumber; ++i) {
-//            int containerType = i / (int) Math.ceil((double) containersNumber / 3.0D);
-//            containers.add(new PowerContainer(IDs.pollId(Container.class), brokerId, (double) ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.
-//                    CONTAINER_PES[containerType], ConstantsExamples.CONTAINER_RAM[containerType], ConstantsExamples.CONTAINER_BW, 0L, "Xen",
-//                    new ContainerCloudletSchedulerDynamicWorkload(ConstantsExamples.CONTAINER_MIPS[containerType], ConstantsExamples.CONTAINER_PES[containerType]), ConstantsExamples.SCHEDULING_INTERVAL));
             containers.add(new PowerContainer(IDs.pollId(Container.class), brokerId, (double) ConstantsExamples.CONTAINER_MIPS, ConstantsExamples.
                     CONTAINER_PES, ConstantsExamples.CONTAINER_RAM, ConstantsExamples.CONTAINER_BW, 0L, "Xen",
                     new ContainerCloudletSchedulerDynamicWorkload(ConstantsExamples.CONTAINER_MIPS, ConstantsExamples.CONTAINER_PES), ConstantsExamples.SCHEDULING_INTERVAL));
@@ -365,41 +336,31 @@ public class Simulation2 {
     public static List<ContainerCloudlet> createContainerCloudletList2(int brokerId, int numberOfCloudlets)
             throws FileNotFoundException {
     	String inputFolderName = ".//workload/planetlab";
-    			//ContainerCloudSimExample1.class.getClassLoader().getResource().getPath();
-        // = "..//workload//planetlab";
         ArrayList<ContainerCloudlet> cloudletList = new ArrayList<ContainerCloudlet>();
         long fileSize = 300L;
         long outputSize = 300L;
         UtilizationModelNull utilizationModelNull = new UtilizationModelNull();
         java.io.File inputFolder1 = new java.io.File(inputFolderName);
         java.io.File[] files1 = inputFolder1.listFiles();
-//        System.out.println(files1[0]);
         int createdCloudlets = 0;
-        int contador = 1;
         for (java.io.File aFiles1 : files1) {
-//        	System.out.println(contador);
             java.io.File inputFolder = new java.io.File(aFiles1.toString());
             java.io.File[] files = inputFolder.listFiles();
-//            System.out.println(files[0]);
             for (int i = 0; i < files.length; ++i) {
                 if (createdCloudlets < numberOfCloudlets) {
-//                	System.out.println(contador);
                     ContainerCloudlet cloudlet = null;
                     try {
                         cloudlet = new ContainerCloudlet(IDs.pollId(ContainerCloudlet.class), ConstantsExamples.CLOUDLET_LENGTH, 1,
                                 fileSize, outputSize, new UtilizationModelPlanetLabInMemoryExtended(files[i].getAbsolutePath(), 300.0D),
                                 utilizationModelNull, utilizationModelNull);
-//                        System.out.println(contador);
                     } catch (Exception var13) {
                         var13.printStackTrace();
                         System.exit(0);
                     }
-                    contador++;
                     cloudlet.setUserId(brokerId);
                     cloudletList.add(cloudlet);
                     createdCloudlets++;
                 } else {
-//                	System.out.println("Sai aqui!");
                 	System.out.println("Cloudlets: "+cloudletList.size());
                     return cloudletList;
                 }
