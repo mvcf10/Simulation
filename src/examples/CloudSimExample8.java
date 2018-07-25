@@ -1,17 +1,10 @@
-package simulation;
+package examples;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
 
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
@@ -28,53 +21,75 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
-import org.cloudbus.cloudsim.util.WorkloadFileReader;
 
 /**
- * Scalable Simulation
- * By Vinicius Figueiredo - 21/03/2018
+ * An example showing how to create simulation entities
+ * (a DatacenterBroker in this example) in run-time using
+ * a globar manager entity (GlobalBroker).
  */
-public class Simulation1 {
+public class CloudSimExample8 {
 
+	private static List<Cloudlet> cloudletList2; //added by OOA
+	private static List<Vm> vmList2; //added by OOA
+	
 	/** The cloudlet list. */
 	private static List<Cloudlet> cloudletList;
 
-	/** The vmlist. */
-	private static List<Vm> vmlist;
+	/** The vmList. */
+	private static List<Vm> vmList;
 
-	private static List<Vm> createVM(int userId, int vms) {
-
+	private static List<Vm> createVM(int userId, int vms, int idShift) {
 		//Creates a container to store VMs. This list is passed to the broker later
 		LinkedList<Vm> list = new LinkedList<Vm>();
 
-		/* 
-		 * VM Like m4.xlarge
-		 */
-		
 		//VM Parameters
-		long size = 25600000; //image size (MB)
-		int ram = 8192; //vm memory (MB)
-		int mips = 1000;
-		long bw = 10000;
-		int pesNumber = 2; //number of cpus
+		long size = 10000; //image size (MB)
+		int ram = 512; //vm memory (MB)
+		int mips = 250;
+		long bw = 1000;
+		int pesNumber = 1; //number of cpus
 		String vmm = "Xen"; //VMM name
 
 		//create VMs
 		Vm[] vm = new Vm[vms];
 
 		for(int i=0;i<vms;i++){
-			vm[i] = new Vm(i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
-			//for creating a VM with a space shared scheduling policy for cloudlets:
-			//vm[i] = Vm(i, userId, mips, pesNumber, ram, bw, size, priority, vmm, new CloudletSchedulerSpaceShared());
-
+			vm[i] = new Vm(idShift + i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
 			list.add(vm[i]);
 		}
 
 		return list;
 	}
+
+
+	private static List<Cloudlet> createCloudlet(int userId, int cloudlets, int idShift){
+		// Creates a container to store Cloudlets
+		LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+
+		//cloudlet parameters
+		long length = 40000;
+		long fileSize = 300;
+		long outputSize = 300;
+		int pesNumber = 1;
+		UtilizationModel utilizationModel = new UtilizationModelFull();
+
+		Cloudlet[] cloudlet = new Cloudlet[cloudlets];
+
+		for(int i=0;i<cloudlets;i++){
+			cloudlet[i] = new Cloudlet(idShift + i, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+			// setting the owner of these Cloudlets
+			cloudlet[i].setUserId(userId);
+			list.add(cloudlet[i]);
+		}
+
+		return list;
+	}
+
 
 	////////////////////////// STATIC METHODS ///////////////////////
 
@@ -82,68 +97,54 @@ public class Simulation1 {
 	 * Creates main() to run this example
 	 */
 	public static void main(String[] args) {
-		System.out.println("Starting Simulation...");
+		Log.printLine("Starting CloudSimExample8...");
 
 		try {
-			
-			try {
-				OutputStream os = new FileOutputStream(".//result//result.txt");
-				Log.setOutput(os);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			// First step: Initialize the CloudSim package. It should be called
 			// before creating any entities.
-			int num_user = 1;   // number of grid users
+			int num_user = 2;   // number of grid users
 			Calendar calendar = Calendar.getInstance();
 			boolean trace_flag = false;  // mean trace events
 
 			// Initialize the CloudSim library
 			CloudSim.init(num_user, calendar, trace_flag);
 
+			GlobalBroker globalBroker = new GlobalBroker("GlobalBroker");
+
+
 			// Second step: Create Datacenters
 			//Datacenters are the resource providers in CloudSim. We need at list one of them to run a CloudSim simulation
 			@SuppressWarnings("unused")
-			Datacenter datacenter0 = createDatacenter("Standart_Datacenter");
-			//@SuppressWarnings("unused")
-			//Datacenter datacenter1 = createDatacenter("Datacenter_1");
+			Datacenter datacenter0 = createDatacenter("Datacenter_0");
+			@SuppressWarnings("unused")
+			Datacenter datacenter1 = createDatacenter("Datacenter_1");
 
 			//Third step: Create Broker
-			DatacenterBroker broker = createBroker();
+			DatacenterBroker broker = createBroker("Broker_0");
 			int brokerId = broker.getId();
 
 			//Fourth step: Create VMs and Cloudlets and send them to broker
-			vmlist = createVM(brokerId,2); //creating 20 vms
-			
-			//cloudletList = createCloudlet(brokerId,40); // creating 40 cloudlets
-			cloudletList = createCloudLets(brokerId); // creating 40 cloudlets
+			vmList = createVM(brokerId, 5, 0); //creating 5 vms
+			cloudletList = createCloudlet(brokerId, 10, 0); // creating 10 cloudlets
+			vmList2 = createVM(brokerId, 5, 0); //creating 5 vms //added by OOA
+			cloudletList2 = createCloudlet(brokerId, 10, 0); // creating 10 cloudlets //added by OOA
 
-			broker.submitVmList(vmlist);
+			broker.submitVmList(vmList);
 			broker.submitCloudletList(cloudletList);
-			
-			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			Date dateStarted = new Date();
-			Log.printLine("========== OUTPUT ==========");
-			Log.printLine("Started at:" + (dateFormat.format(dateStarted)));
 
 			// Fifth step: Starts the simulation
 			CloudSim.startSimulation();
-			
-			// Final step: Print results when simulation is over
+			broker.submitVmList(vmList2);
+			broker.submitCloudletList(cloudletList2);
+			// Final step: Print results when simucreateBrokerlation is over
 			List<Cloudlet> newList = broker.getCloudletReceivedList();
+			newList.addAll(globalBroker.getBroker().getCloudletReceivedList());
 
 			CloudSim.stopSimulation();
 
 			printCloudletList(newList);
-			
-			Date dateFinished = new Date();
-			Log.printLine("Finished at:" + (dateFormat.format(dateFinished)));
-			Log.printLine("============================");
-			
-			System.out.println("Simulation finished!");
-			//Log.printLine("--- Simulation finished!");
+
+			Log.printLine("CloudSimExample8 finished!");
 		}
 		catch (Exception e)
 		{
@@ -162,16 +163,16 @@ public class Simulation1 {
 		// 2. A Machine contains one or more PEs or CPUs/Cores. Therefore, should
 		//    create a list to store these PEs before creating
 		//    a Machine.
-//		List<Pe> peList1 = new ArrayList<Pe>();
+		List<Pe> peList1 = new ArrayList<Pe>();
 
-		int mips = 2000;
+		int mips = 1000;
 
 		// 3. Create PEs and add these into the list.
 		//for a quad-core machine, a list of 4 PEs is required:
-//		peList1.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
-//		peList1.add(new Pe(1, new PeProvisionerSimple(mips)));
-//		peList1.add(new Pe(2, new PeProvisionerSimple(mips)));
-//		peList1.add(new Pe(3, new PeProvisionerSimple(mips)));
+		peList1.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
+		peList1.add(new Pe(1, new PeProvisionerSimple(mips)));
+		peList1.add(new Pe(2, new PeProvisionerSimple(mips)));
+		peList1.add(new Pe(3, new PeProvisionerSimple(mips)));
 
 		//Another list, for a dual-core machine
 		List<Pe> peList2 = new ArrayList<Pe>();
@@ -180,10 +181,9 @@ public class Simulation1 {
 		peList2.add(new Pe(1, new PeProvisionerSimple(mips)));
 
 		//4. Create Hosts with its id and list of PEs and add them to the list of machines
-		
 		int hostId=0;
-		int ram = 8192; //host memory (MB)
-		long storage = 25600000; //host storage
+		int ram = 16384; //host memory (MB)
+		long storage = 1000000; //host storage
 		int bw = 10000;
 
 		hostList.add(
@@ -192,8 +192,8 @@ public class Simulation1 {
     				new RamProvisionerSimple(ram),
     				new BwProvisionerSimple(bw),
     				storage,
-    				peList2,
-    				new VmSchedulerTimeShared(peList2)
+    				peList1,
+    				new VmSchedulerTimeShared(peList1)
     			)
     		); // This is our first machine
 
@@ -209,32 +209,6 @@ public class Simulation1 {
     				new VmSchedulerTimeShared(peList2)
     			)
     		); // Second machine
-
-
-		//To create a host with a space-shared allocation policy for PEs to VMs:
-		//hostList.add(
-    	//		new Host(
-    	//			hostId,
-    	//			new CpuProvisionerSimple(peList1),
-    	//			new RamProvisionerSimple(ram),
-    	//			new BwProvisionerSimple(bw),
-    	//			storage,
-    	//			new VmSchedulerSpaceShared(peList1)
-    	//		)
-    	//	);
-
-		//To create a host with a oportunistic space-shared allocation policy for PEs to VMs:
-		//hostList.add(
-    	//		new Host(
-    	//			hostId,
-    	//			new CpuProvisionerSimple(peList1),
-    	//			new RamProvisionerSimple(ram),
-    	//			new BwProvisionerSimple(bw),
-    	//			storage,
-    	//			new VmSchedulerOportunisticSpaceShared(peList1)
-    	//		)
-    	//	);
-
 
 		// 5. Create a DatacenterCharacteristics object that stores the
 		//    properties of a data center: architecture, OS, list of
@@ -267,11 +241,11 @@ public class Simulation1 {
 
 	//We strongly encourage users to develop their own broker policies, to submit vms and cloudlets according
 	//to the specific rules of the simulated scenario
-	private static DatacenterBroker createBroker(){
+	private static DatacenterBroker createBroker(String name){
 
 		DatacenterBroker broker = null;
 		try {
-			broker = new DatacenterBroker("Broker");
+			broker = new DatacenterBroker(name);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -288,9 +262,8 @@ public class Simulation1 {
 		Cloudlet cloudlet;
 
 		String indent = "    ";
-		
-		
-		
+		Log.printLine();
+		Log.printLine("========== OUTPUT ==========");
 		Log.printLine("Cloudlet ID" + indent + "STATUS" + indent +
 				"Data center ID" + indent + "VM ID" + indent + indent + "Time" + indent + "Start Time" + indent + "Finish Time");
 
@@ -298,8 +271,8 @@ public class Simulation1 {
 		for (int i = 0; i < size; i++) {
 			cloudlet = list.get(i);
 			Log.print(indent + cloudlet.getCloudletId() + indent + indent);
-			
-			if (cloudlet.getCloudletStatusString() == "Success"){
+
+			if (cloudlet.getCloudletStatus() == Cloudlet.SUCCESS){
 				Log.print("SUCCESS");
 
 				Log.printLine( indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
@@ -307,18 +280,77 @@ public class Simulation1 {
 						indent + indent + dft.format(cloudlet.getExecStartTime())+ indent + indent + indent + dft.format(cloudlet.getFinishTime()));
 			}
 		}
-		
+
 	}
-	
-	private static List<Cloudlet> createCloudLets(int userId) throws FileNotFoundException{
-		List<Cloudlet> cloudletList;
-		//Read Cloudlets from workload file in the swf format
-		WorkloadFileReader workloadFileReader = new WorkloadFileReader(".//workload//DellWorkload.swf", 1);
-		//generate cloudlets from workload file
-		cloudletList = workloadFileReader.generateWorkload();
-		for (Cloudlet cldt : cloudletList) {
-			cldt.setUserId(userId);
+
+	public static class GlobalBroker extends SimEntity {
+
+		private static final int CREATE_BROKER = 0;
+		private List<Vm> vmList;
+		private List<Cloudlet> cloudletList;
+		private DatacenterBroker broker;
+
+		public GlobalBroker(String name) {
+			super(name);
 		}
-		return cloudletList;
+
+		@Override
+		public void processEvent(SimEvent ev) {
+			switch (ev.getTag()) {
+			case CREATE_BROKER:
+				setBroker(createBroker(super.getName()+"_"));
+
+				//Create VMs and Cloudlets and send them to broker
+				setVmList(createVM(getBroker().getId(), 5, 100)); //creating 5 vms
+				setCloudletList(createCloudlet(getBroker().getId(), 10, 100)); // creating 10 cloudlets
+
+				broker.submitVmList(getVmList());
+				broker.submitCloudletList(getCloudletList());
+
+				CloudSim.resumeSimulation();
+
+				break;
+
+			default:
+				Log.printLine(getName() + ": unknown event type");
+				break;
+			}
+		}
+
+		@Override
+		public void startEntity() {
+			Log.printLine(super.getName()+" is starting...");
+			schedule(getId(), 200, CREATE_BROKER);
+		}
+
+		@Override
+		public void shutdownEntity() {
+		}
+
+		public List<Vm> getVmList() {
+			return vmList;
+		}
+
+		protected void setVmList(List<Vm> vmList) {
+			this.vmList = vmList;
+		}
+
+		public List<Cloudlet> getCloudletList() {
+			return cloudletList;
+		}
+
+		protected void setCloudletList(List<Cloudlet> cloudletList) {
+			this.cloudletList = cloudletList;
+		}
+
+		public DatacenterBroker getBroker() {
+			return broker;
+		}
+
+		protected void setBroker(DatacenterBroker broker) {
+			this.broker = broker;
+		}
+
 	}
+
 }
